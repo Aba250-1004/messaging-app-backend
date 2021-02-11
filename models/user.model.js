@@ -3,10 +3,11 @@ const mongoose = require("mongoose")
 const User = mongoose.model(
     "User",
     new mongoose.Schema({
-       username: String,
+       firstName: String,
+       lastName: String,
+       userName: String,
        email: String,
        password: String,
-       about: { type: String, default: ""},
        roles: [
            {
                type: mongoose.Schema.Types.ObjectId,

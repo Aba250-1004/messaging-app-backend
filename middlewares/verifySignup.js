@@ -15,7 +15,8 @@ checkDuplicateUsernameOrEmail = (req, res, next) => {
         }
         
         if (user) {
-            res.status(400).send({message: "failed, This user already exist"})
+            console.log(user)
+            res.status(400).send({message: "failed, This user already exist, findone"})
         }
 
     // Email
@@ -52,10 +53,18 @@ checkDuplicateUsernameOrEmail = (req, res, next) => {
     
         next();
     };
+
+    checkPasswordsMatch = (req, res,next) => {
+        if (req.body.password !== req.body.passwordReenter){
+            return res.send({message: "Password's don't match"})
+        }        
+        next();
+    }
   
   const verifySignUp = {
     checkDuplicateUsernameOrEmail,
     checkRolesExisted,
+    checkPasswordsMatch
   };
 
   

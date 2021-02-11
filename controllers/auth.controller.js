@@ -11,65 +11,70 @@ const bcrypt = require('bcryptjs')
 
 // This will handle stand up
 exports.signup = (req,res) => {
-    
-    // we are going to make out user object using the params returned from req
-    const user = new User({
-        username: req.body.username,
-        email: req.body.email,
-        password: bcrypt.hashSync(req.body.password, 8)
-    })
 
-    // we save that user, and if there is an error we throw that error
-    user.save((err, user) => {
-        if (err) {
-            res.status(500).send({message: err})
-            return
-        }
+        // if (req.body.password !== req.body.passwordReenter){
+        //     return res.send({message: "Password's don't match"})
+        // }  
+        // we are going to make out user object using the params returned from req
+        const user = new User({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            userName: req.body.userName,
+            email: req.body.email,
+            password: bcrypt.hashSync(req.body.password, 8)
+        })
+        
+        // we save that user, and if there is an error we throw that error
+        user.save((err, user) => {
+            if (err) {
+                res.status(500).send({message: err})
+                return
+            }
 
-        // if no error we check if roles was passed on req.body
-        if( req.body.roles) {
-            Role.find({
-                name: { $in: req.body.roles}
-            }, (err, roles) => {
-                if (err) {
-                    res.status(500).send({message: err})
-                    return
-                }
-                
-                // pass roles id from query above to user.roles assigne user and admin
-                user.roles = roles.map( role => role._id)
-                // save our updates users
-                user.save(err =>{
+            // if no error we check if roles was passed on req.body
+            if( req.body.roles) {
+                Role.find({
+                    name: { $in: req.body.roles}
+                }, (err, roles) => {
                     if (err) {
                         res.status(500).send({message: err})
                         return
                     }
-
-                    res.send({message: "User creates successfully"})
                     
-                })
+                    // pass roles id from query above to user.roles assigne user and admin
+                    user.roles = roles.map( role => role._id)
+                    // save our updates users
+                    user.save(err =>{
+                        if (err) {
+                            res.status(500).send({message: err})
+                            return
+                        }
 
-            })    
-        } else {
-            Role.findOne({name: "user"}, (err, role) => {
-                if (err) {
-                    res.status(500).send({message: err})
-                    return
-                }
-                // just assign users roles id to document
-                user.roles = [role._id]
+                        res.send({message: "User creates successfully"})
+                        
+                    })
 
-                user.save(err => {
+                })    
+            } else {
+                Role.findOne({name: "user"}, (err, role) => {
                     if (err) {
                         res.status(500).send({message: err})
                         return
-                    } 
-                    res.send({message: "user was registered successfully"})
+                    }
+                    // just assign users roles id to document
+                    user.roles = [role._id]
+
+                    user.save(err => {
+                        if (err) {
+                            res.status(500).send({message: err})
+                            return
+                        } 
+                        res.send({message: "User was registered successfully", user:user})
+                    })
                 })
-            })
-        }
-    })
-}
+            }
+        })
+    }
 
 exports.signin = (req, res) => {
     User.findOne({
@@ -99,7 +104,7 @@ exports.signin = (req, res) => {
         // if password is not valid, we returning invalid password
         //return a boolean
         if (!passwordIsValid) {
-            return res.status(401).send({ accessToken: null, message: "invalid password"})
+            return res.status(401).send({ accessToken: null, message: "Invalid password"})
         }
 
         // is password is valid we generage a new token
@@ -131,8 +136,7 @@ exports.getProfile = (req, res) => {
     // console.log("hit get profile")
     // console.log(req.params.id)
     // console.log(req.body.username)
-    User.findOne({username: req.params.id})
-    .exec((err, user) => {
+    User.findOne({_id: req.params.id}, function(err,user){
         if (err) {
             return res.status(404).send({message: "User not found"})
         }else{ 
@@ -140,6 +144,14 @@ exports.getProfile = (req, res) => {
             return res.status(202).send({data:user})
         }
     })
+    // .exec((err, user) => {
+    //     if (err) {
+    //         return res.status(404).send({message: "User not found"})
+    //     }else{ 
+    //         console.log(req.params.id)
+    //         return res.status(202).send({data:user})
+    //     }
+    // })
 }
 
 
