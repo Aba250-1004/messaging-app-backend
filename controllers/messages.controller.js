@@ -6,105 +6,115 @@ const Message = db.message
 const User = db.user
 
 exports.createConversationWithNewMessage = (req,res) => {
-    let currentUser = null
-    User.findOne({
-        userName:req.body.userName
-    }).exec((err, user) => {
-        if (err){
-            return res.send({message:"current user does not exist!"})
-        }else{
-            let otherUsersId = []
             // console.log(req.body.otherUserNames)
-            for(let userName of req.body.otherUserNames){
-                User.find({
-                    userName:userName
-                }).exec((err,otherUser) => {
-                    if (err){
-                        return res.send({message:"user: "+ userName +" does not exist cannot add to conversation"})
-                    }else{
-                        console.log("other user: "+otherUser)
-                        otherUsersId.push(otherUser._id)
+            User.find({
+                userName: {$in: [req.body.userName,...req.body.otherUserNames]}
+            }).exec((err,users) => {
+                if (err){
+                    return res.send({message: "A user doesn't exist", currentUser:req.body.userName ,listOfUsers:req.body.otherUserNames})
+                }else{
+                    let otherUsersId = []
+                    for (let i = 1; i < users.length; i++){
+                        otherUsersId.push(users[i]._id)
                     }
-                })
-            }
-            if (user){
-                console.log("current user: "+user)
-                const message = new Message({
-                    fromUserId: user._id,
-                    msgBody: req.body.msgBody
-                })
-        
-                message.save((err, message) => {
-                    if (err) {
-                        res.status(500).send({message: err, type:'message'})
-                        return
-                    }
-                })
-        
-                const conversation = new Conversation({
-                    userIds: [user._id, ...otherUsersId],
-                    messages: [message]
-                })
-        
-                conversation.save((err, conversation) => {
-                    if (err) {
-                        res.status(500).send({message: err, type:'conversation'})
-                        return
-                    }else{
-                        return res.send({conversation:conversation, message: message})
-                    }
-                })
-            }
-
+                    console.log("Users: "+ users)
+                    const message = new Message({
+                        fromUserId: users[0]._id,
+                        msgBody: req.body.msgBody
+                    })
+            
+                    message.save((err, message) => {
+                        if (err) {
+                            res.status(500).send({message: err, type:'message'})
+                            return
+                        }
+                    })
+            
+                    const conversation = new Conversation({
+                        userIds: [users[0]._id, ...otherUsersId],
+                        messages: [message]
+                    })
+            
+                    conversation.save((err, conversation) => {
+                        if (err) {
+                            return res.status(500).send({message: err, type:'conversation'})
+                        }else{
+                            return res.send({conversation:conversation, message: message})
+                        }
+                    })
+                }
+            })
         }
-    })
-}
+
 
 
 exports.sendMessageToExistingGroup = (req,res) => {
-    let currentUser = null
-    User.findOne({
-        userName:req.body.userName
-    }).exec((err, user) => {
+    User.find({
+        userName: {$in:[req.body.userName,...req.body.otherUserNames]}
+    }).exec((err, users) => {
         if (err){
-            return res.send({message:"current user does not exist!"})
+            return res.send({message: "A user doesn't exist", currentUser:req.body.userName ,listOfUsers:req.body.otherUserNames})
         }else{
-            currentUser = user
             let otherUsersId = []
-            for(let userName of req.body.otherUserNames){
-                User.findOne({
-                    userName:userName
-                }).exec((err,user) => {
-                    if (err){
-                        return res.send({message:"user: "+ userName +" does not exist cannot add to conversation"})
-                    }else{
-                        otherUsersId.push(user._id)
-                    }
-                })
+            for (let i = 1; i < users.length; i++){
+                otherUsersId.push(users[i]._id)
             }
+            console.log("Users: "+ users)
+            const message = new Message({
+                fromUserId: users[0]._id,
+                msgBody: req.body.msgBody
+            })
+    
+            message.save((err, message) => {
+                if (err) {
+                    res.status(500).send({message: err, type:'message'})
+                    return
+                }
+            })
+
+            Conversation.findOne({
+                userIds: [users[0]._id, ...otherUsersId]
+            }).exec((err, conversation) => {
+                if (err){
+                    res.send({message: "Conversation does not exist!"})
+                }else{
+                    conversation.messages.push(message)
+
+                    conversation.save((err, conversation) => {
+                        if (err) {
+                            return res.status(500).send({message: err, type:'conversation'})
+                        }else{
+                            return res.send({conversation:conversation, message: message})
+                        }
+                    })
+                }
+            })
         }
     })
-
-    if (currentUser){
-        const message = new Message({
-            fromUserId: currentUser._id,
-            msgBody: req.body.msgBody
-        })
-
-        Conversation.findOne({
-            userIds: [currentUser, ...otherUsersId]
-        }).exec((err, conversation) => {
-            if (err){
-                return res.send({message: "conversation can't be found"})
-            }else{
-                conversation.messages.push(message)
-                return res.status(202).send({messages:conversation})
-            }
-        })
-    }
 }   
 
-exports.getConversationLatestMessages = (req,res) => {
-    
+exports.getConversation = (req,res) => {
+    User.find({
+        userName: {$in:[req.body.userName,...req.body.otherUserNames]}
+    }).exec((err, users) => {
+        if (err){
+            return res.send({message: "A user doesn't exist", currentUser:req.body.userName ,listOfUsers:req.body.otherUserNames})
+        }else{
+            let otherUsersId = []
+            for (let i = 1; i < users.length; i++){
+                otherUsersId.push(users[i]._id)
+            }
+
+            Conversation.findOne({
+                userIds: [users[0]._id, ...otherUsersId]
+            }).exec((err, conversation) => {
+                if (err){
+                    return res.send({message: "Conversation does not exist!"})
+                }else{
+                    return res.send({conversation: conversation})
+                }
+            })
+        }
+    })
 }   
 

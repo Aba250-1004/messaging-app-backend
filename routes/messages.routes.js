@@ -10,5 +10,7 @@ module.exports = function(app) {
         next();
     })
     // routes
-    app.post("/api/message/createConvoWithMessage", controller.createConversationWithNewMessage)
+    app.post("/api/message/new", controller.createConversationWithNewMessage)
+    app.post("/api/message", controller.sendMessageToExistingGroup)
+    app.get("/api/message", controller.getConversation)
 }
