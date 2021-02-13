@@ -3,8 +3,8 @@ const mongoose = require("mongoose")
 const Message = mongoose.model(
     "Message",
     new mongoose.Schema({
-       fromUser: String,
-       content: String,
+       fromUserId: mongoose.ObjectId,
+       msgBody: String,
        createdAt: {type: Date, default: Date.now}
     })
 )

@@ -8,13 +8,11 @@ const Role = db.role
 const jwt = require('jsonwebtoken')
 // For hashing / encrypting out passwords 
 const bcrypt = require('bcryptjs')
+const e = require('cors')
 
 // This will handle stand up
 exports.signup = (req,res) => {
-
-        // if (req.body.password !== req.body.passwordReenter){
-        //     return res.send({message: "Password's don't match"})
-        // }  
+        console.log("hit exports.signup")
         // we are going to make out user object using the params returned from req
         const user = new User({
             firstName: req.body.firstName,
@@ -27,8 +25,7 @@ exports.signup = (req,res) => {
         // we save that user, and if there is an error we throw that error
         user.save((err, user) => {
             if (err) {
-                res.status(500).send({message: err})
-                return
+                return res.status(500).send({message: err})
             }
 
             // if no error we check if roles was passed on req.body
@@ -46,30 +43,27 @@ exports.signup = (req,res) => {
                     // save our updates users
                     user.save(err =>{
                         if (err) {
-                            res.status(500).send({message: err})
-                            return
+                            return res.status(500).send({message: err})
                         }
-
-                        res.send({message: "User creates successfully"})
-                        
+                        return res.send({message: "User creates successfully"})
                     })
 
                 })    
             } else {
                 Role.findOne({name: "user"}, (err, role) => {
                     if (err) {
-                        res.status(500).send({message: err})
-                        return
+                        return res.status(500).send({message: err})
                     }
                     // just assign users roles id to document
                     user.roles = [role._id]
 
                     user.save(err => {
+                        console.log(err)
                         if (err) {
-                            res.status(500).send({message: err})
-                            return
-                        } 
-                        res.send({message: "User was registered successfully", user:user})
+                            return res.status(500).send({message: err})
+                        }else{ 
+                            return res.send({message: "User was registered successfully"})
+                        }
                     })
                 })
             }

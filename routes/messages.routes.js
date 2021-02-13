@@ -9,6 +9,6 @@ module.exports = function(app) {
         );
         next();
     })
-    // set up signup route and pass middlewares to check username,email and roles
-
+    // routes
+    app.post("/api/message/createConvoWithMessage", controller.createConversationWithNewMessage)
 }
