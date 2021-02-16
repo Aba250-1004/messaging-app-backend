@@ -12,7 +12,7 @@ const e = require('cors')
 
 // This will handle stand up
 exports.signup = (req,res) => {
-        console.log("hit exports.signup")
+        console.log(req)
         // we are going to make out user object using the params returned from req
         const user = new User({
             firstName: req.body.firstName,
@@ -71,8 +71,9 @@ exports.signup = (req,res) => {
     }
 
 exports.signin = (req, res) => {
+    console.log("hit sign in")
     User.findOne({
-        username: req.body.username
+        userName: req.body.userName
     })
     // populates values form the roles id we stored in the document
     .populate("roles", "-__v")
@@ -116,7 +117,7 @@ exports.signin = (req, res) => {
         // seding that response back
         res.status(200).send({
             id: user._id,
-            username: user.username,
+            userName: user.userName,
             email: user.email,
             roles: authorities,
             about: user.about,
@@ -152,8 +153,9 @@ exports.getProfile = (req, res) => {
 
 exports.delete = (req,res) => {
     // console.log("hit delete account")
+    // will prob fail bc req.params console log req prob body doe
     User.findOneAndDelete({
-        username: req.params.username
+        userName: req.params.userName
     })
     .exec((err) => {
         if (err) {
@@ -165,7 +167,7 @@ exports.delete = (req,res) => {
 }
 
 exports.editEmail = (req,res) => {
-    User.updateOne({ username: req.body.username }, { email: req.body.email })
+    User.updateOne({ userName: req.body.userName }, { email: req.body.email })
     .exec((err) => {
         if (err) {
             return res.status(404).send({message: "User not found"})
@@ -179,13 +181,13 @@ exports.editAbout = (req,res) => {
     // console.log("hit about")
     // console.log(req.body.username)
     // console.log(req.body.about)
-    User.updateOne({ username: req.body.username }, { about: req.body.about })
+    User.updateOne({ userName: req.body.userName }, { about: req.body.about })
     .exec((err) => {
         if (err) {
             return res.status(404).send({message: "User not found"})
         }else{
-            console.log("About for "+ req.body.username +  " is: " + req.body.about)
-            return res.status(202).send({message:"About for"+ req.body.username +  "is:" + req.body.about})
+            console.log("About for "+ req.body.userName +  " is: " + req.body.about)
+            return res.status(202).send({message:"About for"+ req.body.userName +  "is:" + req.body.about})
         }
     })
 }
@@ -193,12 +195,12 @@ exports.editAbout = (req,res) => {
 exports.editUsername = (req, res) => {
     // console.log("hit edit username")
     // console.log(req)
-    User.updateOne({ username: req.body.username }, { username: req.body.newUsername })
+    User.updateOne({ userName: req.body.userName }, { userName: req.body.newUserName })
     .exec((err) => {
         if (err) {
             return res.status(404).send({message: "User not found"})
         }else{
-            return res.status(202).send({message:"username for this account is now: " + req.body.newUsername})
+            return res.status(202).send({message:"username for this account is now: " + req.body.newUserName})
         }
     })
 }
@@ -206,7 +208,7 @@ exports.editUsername = (req, res) => {
 exports.editPassword = (req, res) => {
     // console.log("hit edit password")
     User.findOne({
-        username: req.body.username
+        userName: req.body.userName
     })
     .exec((err, user) => {
         console.log(err)
@@ -233,7 +235,7 @@ exports.editPassword = (req, res) => {
         }else{
             console.log(req.body.newPassword === req.body.newPasswordAgain)
             if (req.body.newPassword === req.body.newPasswordAgain){
-                User.updateOne({username:req.body.username},{password: bcrypt.hashSync(req.body.newPassword, 8)})
+                User.updateOne({userName:req.body.userName},{password: bcrypt.hashSync(req.body.newPassword, 8)})
                .exec((err) => {
                    console.log(err)
                    if (err){
