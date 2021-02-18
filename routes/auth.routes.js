@@ -19,7 +19,7 @@ module.exports = function(app) {
     app.post("/api/auth/signin", controller.signin)
 
     // delete user
-    app.delete("/api/auth/delete/:username", controller.delete)
+    app.delete("/api/auth/delete/:userName", controller.delete)
 
     // change user email
     app.put("/api/auth/editEmail/:id", controller.editEmail)
@@ -35,5 +35,7 @@ module.exports = function(app) {
 
     // edit about
     app.put("/api/auth/aboutMe/:id", controller.editAbout)
+
+    app.get("/api/auth/userNameExists/:userName", controller.checkIfUserExists)
 }
 

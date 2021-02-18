@@ -152,7 +152,8 @@ exports.getProfile = (req, res) => {
 
 
 exports.delete = (req,res) => {
-    // console.log("hit delete account")
+    console.log("hit delete account")
+    console.log(req.params)
     // will prob fail bc req.params console log req prob body doe
     User.findOneAndDelete({
         userName: req.params.userName
@@ -247,6 +248,20 @@ exports.editPassword = (req, res) => {
             }else{
                 return res.status(401).send({ accessToken: null, message: "Passwords don't match"})
             }
+        }
+    })
+}
+
+exports.checkIfUserExists = (req,res) => {
+    console.log(req)
+    User.findOne({
+        userName: req.params.userName
+    }).exec((err, user) => {
+        console.log(user)
+        if (user){
+            return res.send({userExists:true})
+        }else{
+            return res.send({userExists:false})
         }
     })
 }
