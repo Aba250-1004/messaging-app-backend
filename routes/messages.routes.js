@@ -12,6 +12,6 @@ module.exports = function(app) {
     // routes
     app.post("/api/message/new", controller.createConversationWithNewMessage)
     app.post("/api/message", controller.sendMessageToExistingGroup)
-    app.get("/api/message", controller.getConversation)
+    app.get("/api/message/:id", controller.getConversation)
     app.get("/api/conversations/:userName", controller.getUserConversations)
 }
