@@ -4,6 +4,7 @@ const Conversation = mongoose.model(
     "Conversation",
     new mongoose.Schema({
        userIds: [{type: mongoose.ObjectId}],
+       lastUserMessage: {type: Date, default: Date.now},
        messages: [
         {
             type: mongoose.Schema.Types.ObjectId,

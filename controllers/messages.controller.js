@@ -99,16 +99,21 @@ exports.sendMessageToExistingGroup = (req,res) => {
                     if (err){
                         res.send({message: "Conversation does not exist!"})
                     }else{
-                        console.log(conversation)
-                        conversation.messages.push(message)
-    
-                        conversation.save((err, conversation) => {
-                            if (err) {
-                                return res.status(500).send({message: err, type:'conversation'})
-                            }else{
-                                return res.send({conversation:conversation, message: message})
-                            }
+                        Conversation.findOneAndUpdate({_id:conversation._id},{lastUserMessage:Date.now()}).exec((err, conversation) => {
+                            console.log("date.now = "+ Date.now())
+                            console.log(conversation)
+                            conversation.messages.push(message)
+                            
+        
+                            conversation.save((err, conversation) => {
+                                if (err) {
+                                    return res.status(500).send({message: err, type:'conversation'})
+                                }else{
+                                    return res.send({conversation:conversation, message: message})
+                                }
+                            })
                         })
+                        
                     }
                 })
             })
@@ -194,27 +199,27 @@ exports.getUserConversations = (req, res) => {
             userIds:user._id
         }).exec((err, conversation) => {
             let messageIds = []
-            let conversationIds = []
-            for (let value of conversation){
-                conversationIds.push(value._id)
-            }
             // console.log(conversationIds)
             for (let convos of conversation){
                 messageIds.push(convos.messages[convos.messages.length -1])
             }
             Message.find({
                 _id:{$in:messageIds}
-            }).sort({
-                createdAt: "desc"
             }).exec((err, messages) => {
                 Conversation.find({
                     message:messages._id
+                }).sort({
+                    lastUserMessage: "desc"
                 }).exec((err, conversation) => {
                     console.log("conversation matching: "+conversation)
                     let usersInConvo = []
                     console.log(conversation)
+                    let conversationTimes = []
+                    let conversationIds = []
                     for (let convo of conversation){
                         usersInConvo.push(convo.userIds)
+                        conversationTimes.push(convo.lastUserMessage)
+                        conversationIds.push(convo._id)
                     }
                     usersInConvoFlat = usersInConvo.flat(1)
                     User.find({
@@ -233,7 +238,7 @@ exports.getUserConversations = (req, res) => {
                             userConversationToRet.push(toPush)
                         }
                         // console.log({messages: messages, usernames: userConversationToRet})
-                        return res.send({messages: messages, usernames: userConversationToRet, conversationIds:conversationIds})
+                        return res.send({messages: messages, usernames: userConversationToRet, conversationIds:conversationIds, lastMessageTime: conversationTimes})
                     })
                     
                 })
