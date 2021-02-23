@@ -8,19 +8,19 @@ const Message = db.message
 const User = db.user
 
 exports.createConversationWithNewMessage = (req,res) => {
-            console.log("create convo")
-            console.log(req.body.userName)
-            console.log(req.body.otherUserNames)
+            // console.log("create convo")
+            // console.log(req.body.userName)
+            // console.log(req.body.otherUserNames)
             User.find({
                 userName: {$in: [req.body.userName,...req.body.otherUserNames]}
             }).exec((err,users) => {
                 // console.log("error: "+err)
                 // console.log("users: "+users)
                 if (users.length !== [req.body.userName,...req.body.otherUserNames].length || 0 === req.body.otherUserNames.length ){
-                    console.log("didn't allow")
+                    // console.log("didn't allow")
                     return res.send({message: "A user doesn't exist", currentUser:req.body.userName ,listOfUsers:req.body.otherUserNames})
                 }else{
-                    console.log("allowed")
+                    // console.log("allowed")
                     let otherUsersId = []
                     for (let i = 1; i < users.length; i++){
                         otherUsersId.push(users[i]._id)
@@ -49,7 +49,7 @@ exports.createConversationWithNewMessage = (req,res) => {
                             if (err) {
                                 return res.status(500).send({message: err, type:'conversation'})
                             }else{
-                                console.log({conversation:conversation, message: message})
+                                // console.log({conversation:conversation, message: message})
                                 return res.send({conversation:conversation, message: message})
                             }
                         })
@@ -62,8 +62,8 @@ exports.createConversationWithNewMessage = (req,res) => {
 
 
 exports.sendMessageToExistingGroup = (req,res) => {
-    console.log(req.body.otherUserNames)
-    console.log(req.body.userName)
+    // console.log(req.body.otherUserNames)
+    // console.log(req.body.userName)
     User.find({
         userName: {$in:[req.body.userName,...req.body.otherUserNames]}
     }).exec((err, users) => {
@@ -74,12 +74,12 @@ exports.sendMessageToExistingGroup = (req,res) => {
             for (let i = 1; i < users.length; i++){
                 otherUsersId.push(users[i]._id)
             }
-            console.log("Users: "+ users)
+            // console.log("Users: "+ users)
             User.findOne({
                 userName: req.body.userName
             }).exec((err, user) => {
-                console.log("user: ")
-                console.log(user)
+                // console.log("user: ")
+                // console.log(user)
                 const message = new Message({
                 
                     fromUserId: user._id,
@@ -100,8 +100,8 @@ exports.sendMessageToExistingGroup = (req,res) => {
                         res.send({message: "Conversation does not exist!"})
                     }else{
                         Conversation.findOneAndUpdate({_id:conversation._id},{lastUserMessage:Date.now()}).exec((err, conversation) => {
-                            console.log("date.now = "+ Date.now())
-                            console.log(conversation)
+                            // console.log("date.now = "+ Date.now())
+                            // console.log(conversation)
                             conversation.messages.push(message)
                             
         
@@ -167,8 +167,8 @@ exports.getConversation = (req,res) => {
                                 let toPush = {userName : user.userName, id: user._id}
                                 userNames.push(toPush)
                             }
-                            console.log("messages:")
-                            console.log(messages)
+                            // console.log("messages:")
+                            // console.log(messages)
 
                             // let messageFromUserId = []
                             // for (let message of messages){
@@ -211,9 +211,9 @@ exports.getUserConversations = (req, res) => {
                 }).sort({
                     lastUserMessage: "desc"
                 }).exec((err, conversation) => {
-                    console.log("conversation matching: "+conversation)
+                    // console.log("conversation matching: "+conversation)
                     let usersInConvo = []
-                    console.log(conversation)
+                    // console.log(conversation)
                     let conversationTimes = []
                     let conversationIds = []
                     for (let convo of conversation){
