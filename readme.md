@@ -3,7 +3,7 @@
 
 ## Links
 * Deployed App (TBD)
-* [Frontend Repo](https://github.com/SFX818/Team-3-frontend)
+* [Frontend Repo]https://github.com/Aba250-1004/messaging-app-frontend
 
 ---
 
