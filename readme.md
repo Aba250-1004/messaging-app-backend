@@ -1,8 +1,8 @@
-## Blue Barracuda Boutique 
+##Messaging App Backend
 ---
 
 ## Links
-* Deployed App (TBD)
+* Deployed App amc-messenger.surge.sh
 * [Frontend Repo](https://github.com/Aba250-1004/messaging-app-frontend)
 
 ---
@@ -11,13 +11,10 @@
 
 * bcryptjs
 * body-parser
-* cloudinary
-* cors
 * dotenv
 * express
 * jsonwebtoken
 * mongoose
-* multer
 
 ---
 
@@ -28,7 +25,7 @@ Blue Barracudas Boutique was created with a a simple online store in mind for us
 * Brainstormed user stories, wireframes, and routes to have an idea of how the app will be built.
 * Created RESTful routes in the backend.
 * Created components and connected them to the database models.
-* Displayed user and product data from backend onto frontend.
+* Displayed user and message data from backend onto frontend.
 * Styled using Materialize.
 
 ---
@@ -51,11 +48,11 @@ Blue Barracudas Boutique was created with a a simple online store in mind for us
 * Change About - PUT
 * Get Profile - GET
 
-#### Product
-* Find All Products - GET
-* Create Product - POST
-* Delete Product - DELETE
-* Edit Product - PUT
+#### Message
+* getConversation - GET
+* createConversationWithNewMessage - POST
+* sendMessageToExistingGroup - POST
+* getUserConversations - GET
 
 #### User
 * Test All Access - GET
@@ -63,15 +60,3 @@ Blue Barracudas Boutique was created with a a simple online store in mind for us
 * Test Admin Access - GET
 
 ---
-
-## Challenges & Stretch Goals
-
-#### Challenges
-* Ran into issues with implementing Cloudinary.
-* Minor challenges with getting user data from backend that was not in local storage.
-
-#### Stretch Goals
-
-* Allow users to purchase by credit card.
-* Function to direct message a seller through the website.
-* Write and rate sellers after purchasing products. 
