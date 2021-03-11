@@ -27,6 +27,7 @@ const db = require('./models/')
 const Role = db.role
 
 const dbURI = process.env.MONGODB_URI ||`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`
+// const dbURI2 = `mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`
 
 // connect to mongo database
 db.mongoose.connect(dbURI, {

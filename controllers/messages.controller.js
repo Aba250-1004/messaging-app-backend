@@ -197,7 +197,18 @@ exports.getUserConversations = (req, res) => {
         // console.log("user: "+ user)
         Conversation.find({
             userIds:user._id
+        }).sort({
+            lastUserMessage: "desc"
         }).exec((err, conversation) => {
+            let usersInConvo = []
+                    // console.log(conversation)
+            let conversationTimes = []
+            let conversationIds = []
+            for (let convo of conversation){
+                usersInConvo.push(convo.userIds)
+                conversationTimes.push(convo.lastUserMessage)
+                conversationIds.push(convo._id)
+            }
             let messageIds = []
             // console.log(conversationIds)
             for (let convos of conversation){
@@ -212,15 +223,7 @@ exports.getUserConversations = (req, res) => {
                     lastUserMessage: "desc"
                 }).exec((err, conversation) => {
                     // console.log("conversation matching: "+conversation)
-                    let usersInConvo = []
-                    // console.log(conversation)
-                    let conversationTimes = []
-                    let conversationIds = []
-                    for (let convo of conversation){
-                        usersInConvo.push(convo.userIds)
-                        conversationTimes.push(convo.lastUserMessage)
-                        conversationIds.push(convo._id)
-                    }
+                    
                     usersInConvoFlat = usersInConvo.flat(1)
                     User.find({
                         _id:{$in:usersInConvoFlat}
